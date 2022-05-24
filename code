@@ -1,0 +1,226 @@
+#include <Servo.h>
+
+#define IN1 3
+#define IN2 4
+#define IN3 7
+#define IN4 2
+
+int command;
+int buzzPin=9;
+int servoPin1=10;
+int servoPin2=11;
+int laser=8;
+
+char temp='x';
+int angle1=90;
+int angle2=90;
+int last1=90;
+int last2=90;
+int spd=100;
+
+Servo servo1;
+Servo servo2;
+
+void setup()
+{
+    Serial.begin(9600);
+    servo1.attach(servoPin1);
+    servo2.attach(servoPin2);
+    pinMode(IN1, OUTPUT);
+    pinMode(IN2, OUTPUT);
+    pinMode(IN3, OUTPUT);
+    pinMode(IN4, OUTPUT);
+    pinMode(12, OUTPUT); // red
+    pinMode(13, OUTPUT); // yellow
+    pinMode(14, OUTPUT); // green
+    pinMode(laser, OUTPUT);
+    pinMode(buzzPin, OUTPUT);
+}
+
+void loop(){
+    if (Serial.available()>0){
+        command=Serial.read();
+        Stop();
+        if(command=='X'){
+            temp='X';
+        }
+        if(command=='x'){
+            temp='x';
+        }
+        if(temp=='x'){
+            digitalWrite(14, HIGH);
+            if(command=='F'){ // вперёд
+                analogWrite(IN1, spd); // Задаём направление для 1-го мотора
+                analogWrite(IN2, 0); // Задаём направление для 2-го мотора
+                analogWrite(IN3, spd);
+                analogWrite(IN4, 0);
+            }
+            else if(command=='B'){ // назад
+                analogWrite(IN1, 0);
+                analogWrite(IN2, spd);
+                analogWrite(IN3, 0);
+                analogWrite(IN4, spd);
+            }
+            else if(command=='L'){
+                analogWrite(IN1, spd);
+                analogWrite(IN2, 0);
+                analogWrite(IN3, 0);
+                analogWrite(IN4, spd);
+            }
+            else if(command=='R'){
+                analogWrite(IN1, 0);
+                analogWrite(IN2, spd);
+                analogWrite(IN3, spd);
+                analogWrite(IN4, 0);
+            }
+            else if(command=='0'){
+                spd=111;
+            }
+            else if(command=='1'){
+                spd=127;
+            }
+            else if(command=='2'){
+                spd=143;
+            }
+            else if(command=='3'){
+                spd=159;
+            }
+            else if(command=='4'){
+                spd=175;
+            }
+            else if(command=='5'){
+                spd=191;
+            }
+            else if(command=='6'){
+                spd=207;
+            }
+            else if(command=='7'){
+                spd=223;
+            }
+            else if(command=='8'){
+                spd=239;
+            }
+            else if(command=='9'){
+                spd=255;
+            }
+        }
+        else if(temp=='X'){
+            digitalWrite(14, LOW);
+            digitalWrite(13, HIGH);
+            if(command=='0'){
+                command=command-'0';
+                angle1=command*10;
+                angle2=command*10;
+            }
+            else if(command=='1'){
+                command=command-'0';
+                angle1=command*10;
+                angle2=command*10;
+            }
+            else if(command=='2'){
+                command=command-'0';
+                angle1=command*10;
+                angle2=command*10;
+            }
+            else if(command=='3'){
+                command=command-'0';
+                angle1=command*10;
+                angle2=command*10;
+            }
+            else if(command=='4'){
+                command=command-'0';
+                angle1=command*10;
+                angle2=command*10;
+            }
+            else if(command=='5'){
+                command=command-'0';
+                angle1=command*10;
+                angle2=command*10;
+            }
+            else if(command=='6'){
+                command=command-'0';
+                angle1=command*10;
+                angle2=command*10;
+            }
+            else if(command=='7'){
+                command=command-'0';
+                angle1=command*10;
+                angle2=command*10;
+            }
+            else if(command=='8'){
+                command=command-'0';
+                angle1=command*10;
+                angle2=command*10;
+            }
+            else if(command=='9'){
+                command=command-'0';
+                angle1=command*10;
+                angle2=command*10;
+            }
+            else if(command=='R'){
+                turn1(90+angle1, last1);
+                last1=90+angle1;
+            }
+            else if(command=='L'){
+                turn1(90-angle1, last1);
+                last1=90-angle1;
+            }
+            else if(command=='F'){
+                turn2(90+angle2, last2);
+                last2=90+angle2;
+            }
+            else if(command=='B'){
+                turn2(90-angle2, last2);
+                last2=90-angle2;
+            }
+            else if(command=='W'){
+                digitalWrite(13, LOW);
+                digitalWrite(12, HIGH);
+                tone(buzzPin, 500);
+                digitalWrite(laser, HIGH);
+                delay(300);
+                digitalWrite(laser, LOW);
+                notone();
+                delay(1000);
+                digitalWrite(12, LOW);
+            }
+        }
+    }
+}
+
+void turn1(int angle, int last){
+    if(angle==last){
+        for (int i=last;i<=angle;i++){
+            servo1.write(i);
+            delay(10);
+        }
+    }
+    else{
+        for (int i=last;i==angle;i--){
+            servo1.write(i);
+            delay(10);
+        }
+    }
+}
+
+void turn2(int angle, int last){
+    if(angle==last){
+        for (int i=last;i<=angle;i++){
+            servo2.write(i);
+            delay(10);
+        }
+    }
+    else{
+        for (int i=last;i==angle;i--){
+            servo2.write(i);
+            delay(10);
+        }
+    }
+}
+
+void Stop(){
+  analogWrite(IN1, 0);
+  analogWrite(IN2, 0);
+  analogWrite(IN3, 0);
+  analogWrite(IN4, 0);
+}
